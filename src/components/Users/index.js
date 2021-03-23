@@ -1,58 +1,38 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import Spinner from '../General/Spinner'
+import Fatal from '../General/Fatal'
+import Table from './Table'
 
 import * as usersActions from '../../actions/usersActions'
 
 class Users extends Component {
 
   componentDidMount() {
-    this.props.traerTodos()
+    if(!this.props.usuarios.length) this.props.traerTodos()
   }
 
-  ponerFilas = () => (
-    this.props.usuarios.map((usuario) => (
-      <tr key={ usuario.id }>
-        <td>
-          { usuario.name }
-        </td>
-        <td>
-          { usuario.email }
-        </td>
-        <td>
-          { usuario.website }
-        </td>
-      </tr>
-    ))
-  )
+  ponerContenido = () => {
+    if(this.props.cargando) return <Spinner />
+
+    if(this.props.error) return <Fatal mensaje={ this.props.error } />
+
+    return <Table />
+  }
 
   render () {
+    console.log(this.props)
     return (
       <div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>
-                Nombre
-              </th>
-              <th>
-                Correo
-              </th>
-              <th>
-                Enlace
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            { this.ponerFilas() }
-          </tbody>
-        </table>
+        <h1>Users</h1>
+        { this.ponerContenido() }
       </div>
     )
   }
 }
 
 const mapStateToProps = (reducers) => {
-  return reducers.usersReducers
+  return reducers.usersReducer
 }
 
 export default connect(mapStateToProps, usersActions)(Users)
